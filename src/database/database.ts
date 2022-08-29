@@ -3,7 +3,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { collection, CollectionReference, doc, DocumentReference, Firestore, getDocs, getFirestore, setDoc } from 'firebase/firestore/lite';
 import { catchError, EMPTY, first, from, map, Observable, ReplaySubject, switchMap, throwError } from "rxjs";
 import { firebaseAuth, firebaseConfig } from "../config";
-import { UsersCollection } from "./users";
+import { UsersCollection } from "./users.collection";
 
 export enum Collections {
     Users = 'users',
