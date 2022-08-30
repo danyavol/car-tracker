@@ -5,7 +5,7 @@ export interface Query {
     id: string;
     name: string;
     link: string;
-    userId: string;
+    userId: number;
     checkFrequency: CheckFrequency;
     nextCheck: string;
     cars: Car[];

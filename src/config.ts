@@ -1,6 +1,5 @@
 import { FirebaseOptions } from "firebase/app";
-import { Context, session, Telegraf } from "telegraf";
-import { SessionData } from "./interfaces/session.interface";
+import { Scenes, Telegraf } from "telegraf";
 
 require('dotenv').config();
 
@@ -16,4 +15,4 @@ export const firebaseAuth = {
 
 export const { TG_BOT_TOKEN } = process.env;
 
-export const bot = new Telegraf(TG_BOT_TOKEN);
+export const bot = new Telegraf<Scenes.WizardContext>(TG_BOT_TOKEN);

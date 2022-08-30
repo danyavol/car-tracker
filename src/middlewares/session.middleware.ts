@@ -7,7 +7,8 @@ import { Context, MiddlewareFn } from "telegraf";
 
 export const sessionMiddleware: MiddlewareFn<Context> = (ctx, next) => {
     const sender = getSender(ctx);
-
+    
+    if (!sender) return next();
     if (session.has(sender.id)) return next();
 
     db.users.getUser(sender.id).pipe(
@@ -17,26 +18,24 @@ export const sessionMiddleware: MiddlewareFn<Context> = (ctx, next) => {
                     id: sender.id,
                     firstName: sender.first_name,
                     lastName: sender.last_name || null,
-                    username: sender.username || null,
-                    queryIds: []
+                    username: sender.username || null
                 };
                 session.set(newUser.id, { queries: [] });
 
                 return db.users.saveUser(newUser);
             } else {
-                return db.queries.getQueries(user.queryIds).pipe(
+                return db.queries.getUserQueries(sender.id).pipe(
                     tap(queries => session.set(sender.id, { queries }))
                 );
             }
         })
     )
     .subscribe({
-        next()  {
-            console.log(session.get(sender.id));
+        next() {
             next();
         },
         error(e) {
-            console.log('Load session error', e);
+            console.error('Loading session error', e);
             ctx.reply('Произошла ошибка во время получения данных. Попробуйте позже.');
         }
     });    

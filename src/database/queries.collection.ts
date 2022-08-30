@@ -10,9 +10,9 @@ export class QueriesCollection {
         private dbReady$: Observable<void>
     ) { }
 
-    getQueries(queryIds: string[]): Observable<Query[]> {
+    getUserQueries(userId: number): Observable<Query[]> {
         const ref = collection(this.db, Collections.Queries) as CollectionReference<Query>;
-        const dbQuery = query(ref, where("id", "==", queryIds)); 
+        const dbQuery = query(ref, where("userId", "==", userId)); 
         return this.dbReady$.pipe( 
             switchMap(() => from(getDocs(dbQuery)).pipe(
                 first(),
@@ -21,6 +21,20 @@ export class QueriesCollection {
                 }),
                 catchError((err) => {
                     console.error('Error during getting user!', err);
+                    return EMPTY;
+                })
+            ))
+        );
+    }
+
+    saveQuery(query: Query): Observable<void> {
+        const ref = doc(this.db, Collections.Queries, query.id) as DocumentReference<Query>;
+        
+        return this.dbReady$.pipe( 
+            switchMap(() => from(setDoc(ref, query)).pipe(
+                first(),
+                catchError((err) => {
+                    console.error('Error during saving query!', err);
                     return EMPTY;
                 })
             ))
