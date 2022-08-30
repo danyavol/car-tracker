@@ -1,5 +1,6 @@
 import { FirebaseOptions } from "firebase/app";
-import { Telegraf } from "telegraf";
+import { Context, session, Telegraf } from "telegraf";
+import { SessionData } from "./interfaces/session.interface";
 
 require('dotenv').config();
 

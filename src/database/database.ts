@@ -1,8 +1,9 @@
 import { FirebaseOptions, initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, CollectionReference, doc, DocumentReference, Firestore, getDocs, getFirestore, setDoc } from 'firebase/firestore/lite';
-import { catchError, EMPTY, first, from, map, Observable, ReplaySubject, switchMap, throwError } from "rxjs";
+import { Firestore, getFirestore } from 'firebase/firestore/lite';
+import { catchError, EMPTY, first, from, ReplaySubject } from "rxjs";
 import { firebaseAuth, firebaseConfig } from "../config";
+import { QueriesCollection } from "./queries.collection";
 import { UsersCollection } from "./users.collection";
 
 export enum Collections {
@@ -15,6 +16,7 @@ class Database {
     private dbReady$ = new ReplaySubject<void>();
 
     public users: UsersCollection;
+    public queries: QueriesCollection;
 
     constructor(
         dbConfig: FirebaseOptions,
@@ -34,39 +36,8 @@ class Database {
         });
 
         this.users = new UsersCollection(this.db, this.dbReady$);
+        this.queries = new QueriesCollection(this.db, this.dbReady$);
     }
-
-    // saveMessage(message: any): Observable<void> {
-    //     const docId = `${message.chat.id}:${message.message_id}`;
-    //     const ref = doc(this.db, Collections.Messages, docId) as DocumentReference<any>;
-        
-    //     return this.dbReady$.pipe( 
-    //         switchMap(() => from(setDoc(ref, message)).pipe(
-    //             first(),
-    //             catchError((err) => {
-    //                 console.error('Error during saving message!', err);
-    //                 return EMPTY;
-    //             })
-    //         ))
-    //     );
-    // }
-
-    // getAllMessages(): Observable<any[]> {
-    //     const messagesRef = collection(this.db, Collections.Messages) as CollectionReference<any>;
-        
-    //     return this.dbReady$.pipe( 
-    //         switchMap(() => from(getDocs(messagesRef)).pipe(
-    //             first(),
-    //             map((snap) => {
-    //                 return snap.docs.map((doc) => doc.data());
-    //             }),
-    //             catchError((err) => {
-    //                 console.error('Error during getting all messages!', err);
-    //                 return throwError(() => err);
-    //             })
-    //         ))
-    //     );
-    // }
 }
 
 export const db = new Database(firebaseConfig, firebaseAuth);
