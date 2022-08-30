@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
-import { Car } from "./car.interface";
+import { GetAllCarsResult } from "./car.interface";
 
 export abstract class Parser {
-    abstract getAllCars(): Observable<Car[]>;
+    abstract getAllCars(): Observable<GetAllCarsResult>;
 }

@@ -13,3 +13,8 @@ export interface Car {
     city: string;
     preview_image: string;
 }
+
+export interface GetAllCarsResult {
+    hadErrors: boolean;
+    cars: Car[];
+}

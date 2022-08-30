@@ -1,5 +1,5 @@
-import { catchError, combineLatestAll, defer, forkJoin, from, map, mergeAll, Observable, of, switchMap, tap } from "rxjs";
-import { Car } from "src/interfaces/car.interface";
+import { catchError, combineLatestAll, defer, from, map, mergeAll, Observable, of, switchMap } from "rxjs";
+import { Car, GetAllCarsResult } from "src/interfaces/car.interface";
 import { Parser } from "src/interfaces/parser.interface";
 import { JSDOM } from "jsdom";
 import axios from "axios";
@@ -13,7 +13,7 @@ export class AvByParser implements Parser {
     }
 
     private url: string;
-    // https://cars.av.by/filter?brands[0][brand]=1216&brands[0][model]=2074&page=2
+
     constructor(url: string) {
         const parsedUrl = new URL(url);
         parsedUrl.searchParams.set('page', '1');
@@ -21,7 +21,8 @@ export class AvByParser implements Parser {
         this.url = parsedUrl.href;
     }
 
-    getAllCars(): Observable<Car[]> {
+    getAllCars(): Observable<GetAllCarsResult> {
+        let hadErrors = false;
         return from(
             axios.get<string>(this.url)
         ).pipe(
@@ -37,7 +38,10 @@ export class AvByParser implements Parser {
                 }
 
                 const obs = urls.map(url => defer(() =>
-                    from(axios.get<string>(url)).pipe(catchError(() => of(null)))
+                    from(axios.get<string>(url)).pipe(catchError(() => {
+                        hadErrors = true;
+                        return of(null);
+                    }))
                 ));
 
                 return from([of(response), ...obs]);
@@ -49,7 +53,14 @@ export class AvByParser implements Parser {
                 return of(this.getCars(dom));
             }),
             combineLatestAll(),
-            map(results => [].concat(...results)),
+            catchError(() => {
+                hadErrors = true;
+                return of([[]])
+            }),
+            map(results => ({
+                hadErrors,
+                cars: [].concat(...results)
+            })),
         );
     }
 
@@ -59,10 +70,6 @@ export class AvByParser implements Parser {
 
         const countString = title.childNodes[4].nodeValue.replace(/\s/g, '');
         return parseInt(countString) || 0;
-    }
-
-    private isEmpty(dom: JSDOM): boolean {
-        return dom.window.document.getElementsByClassName('listing__empty').length > 0;
     }
 
     private getCars(dom: JSDOM): Car[] {
