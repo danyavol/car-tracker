@@ -7,6 +7,7 @@ import { getCtxSession } from "src/services/telegraf.service";
 import { session } from "src/services/user-session.service";
 import { Scenes } from "telegraf";
 import { Message } from "telegraf/typings/core/types/typegram";
+import { v4 as uuidv4 } from 'uuid';
 
 export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
     (ctx) => {
@@ -44,7 +45,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
         
         if (text && !state.loading) {
             const query: Query = {
-                id: '123',
+                id: uuidv4(),
                 name: text,
                 link: state.link,
                 checkFrequency: CheckFrequency.Day1,

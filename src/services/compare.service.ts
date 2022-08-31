@@ -42,8 +42,7 @@ export function compareCars(oldArray: Car[], newArray: Car[]): CompareResult<Car
         isEqual: (car1, car2) => {
             let key: keyof Car;
             for (key in car1) {
-                if (key === "last_update") continue;
-                if (car1[key] !== car2[key]) return false;
+                if (car1.price_usd !== car2.price_usd) return false;
             }
             return true;
         }

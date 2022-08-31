@@ -8,5 +8,5 @@ export interface Query {
     userId: number;
     checkFrequency: CheckFrequency;
     nextCheck: string;
-    cars: Car[];
+    cars: Car[] | null;
 }

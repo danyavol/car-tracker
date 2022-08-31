@@ -13,7 +13,10 @@ export function getMainMenuKeyboard(session: SessionData) {
 
 export function getCarListKeyboard(session: SessionData) {
     return Markup.inlineKeyboard([
-        ...session.queries.map(q => ([{ callback_data: q.id, text: q.name }]))
+        ...session.queries.map(q => [{ callback_data: 
+            JSON.stringify({action: Action.OpenCar, queryId: q.id}),
+            text: q.name 
+        }])
     ]);
 }
 
@@ -21,7 +24,7 @@ export function getCarSettingsKeyboard(query: Query) {
     return Markup.inlineKeyboard([
         [{ 
             callback_data: JSON.stringify({
-                action: Action.CheckCars, queryId: query.id
+                action: Action.CheckCar, queryId: query.id
             }),
             text: "✅ Выполнить проверку"
         }],
