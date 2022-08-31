@@ -89,7 +89,7 @@ export class AvByParser implements Parser {
                 name: item.querySelector('.link-text').textContent,
                 city: item.querySelector('.listing-item__location').textContent,
                 last_update: item.querySelector('.listing-item__date').textContent,
-                preview_image: (item.querySelector('.listing-item__photo img') as HTMLImageElement).dataset.src,
+                preview_image: (item.querySelector('.listing-item__photo img') as HTMLImageElement).dataset.srcset.split(' ')[0],
                 price_usd: parseInt(priceString.slice(1, -1).replace(/\s/g, '')),
                 year: parseInt(params[0].textContent.slice(0, 4)),
                 mileage: parseInt(params[2].textContent.replace(/\D/g, '')),

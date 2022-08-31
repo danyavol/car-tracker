@@ -37,7 +37,8 @@ function getCarInfo(car: Car): string {
     return `🚙 *[${escape(car.name)}](${car.link})*` 
         + `\n${car.transmission_type}, ${escape(car.engine_capacity)}, ${car.engine_type}, ${car.body_type}`
         + `\n${escape(formatYear(car.year))}, ${formatMileage(car.mileage)}`
-        + `\n*${escape(formatPrice(car.price_usd))}*`;
+        + `\n${escape(car.city)}`
+        + `\n\n*${escape(formatPrice(car.price_usd))}*`;
 }
 
 function getEditedCarInfo(oldCar: Car, newCar: Car): string {

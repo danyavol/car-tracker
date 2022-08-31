@@ -1,4 +1,5 @@
 import { Action } from "src/interfaces/actions.interface";
+import { CheckFrequency } from "src/interfaces/check-frequency.interface";
 import { Query } from "src/interfaces/query.interface";
 import { SessionData } from "src/interfaces/session.interface";
 import { getCheckFrequencyName } from "src/services/query.service";
@@ -24,16 +25,15 @@ export function getCarSettingsKeyboard(query: Query) {
     return Markup.inlineKeyboard([
         [{ 
             callback_data: JSON.stringify({
-                action: Action.CheckCar, queryId: query.id
+                action: Action.RunCarCheck, queryId: query.id
             }),
             text: "✅ Выполнить проверку"
         }],
-        
         [{ 
             callback_data: JSON.stringify({ 
-                action: Action.ChangeCheckFrequency, queryId: query.id
+                action: Action.CheckFrequency, queryId: query.id
             }),
-            text: "⏱ " + getCheckFrequencyName(query)
+            text: "⏱ Автоматическая проверка"
         }],
         [{ 
             callback_data: JSON.stringify({ 
@@ -47,5 +47,27 @@ export function getCarSettingsKeyboard(query: Query) {
             }),
             text: "❌ Удалить"
         }],
+        [{
+            callback_data: JSON.stringify({action: Action.OpenCarsList}),
+            text: "« Назад"
+        }]
+    ]);
+}
+
+export function getFrequencyKeyboard(query: Query) {
+    return Markup.inlineKeyboard([
+        ...Object.keys(CheckFrequency).map(key => [{
+            callback_data: JSON.stringify({
+                action: Action.UpdateCheckFrequency,
+                queryId: query.id,
+                fr: CheckFrequency[key]
+            }),
+            text: (query.checkFrequency === CheckFrequency[key] ? "✅ " : "") + getCheckFrequencyName(CheckFrequency[key]),
+            
+        }]),
+        [{
+            callback_data: JSON.stringify({action: Action.OpenCar, queryId: query.id}),
+            text: "« Назад"
+        }]
     ]);
 }

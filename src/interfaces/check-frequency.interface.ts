@@ -1,4 +1,5 @@
 export enum CheckFrequency {
+    Never = 'ne',
     Hour1 = 'h1',
     Hour6 = 'h6',
     Day1 = 'd1',

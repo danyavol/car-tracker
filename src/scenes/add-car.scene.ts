@@ -7,7 +7,8 @@ import { getCtxSession } from "src/services/telegraf.service";
 import { session } from "src/services/user-session.service";
 import { Scenes } from "telegraf";
 import { Message } from "telegraf/typings/core/types/typegram";
-import { v4 as uuidv4 } from 'uuid';
+import uuid from "short-uuid";
+import { MSG } from "src/metadata";
 
 export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
     (ctx) => {
@@ -16,7 +17,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
         if (text === "Отмена") {
             ctx.scene.leave();
             ctx.replyWithMarkdownV2(
-                '〽 *Главное меню*', 
+                MSG.mainMenu, 
                 getMainMenuKeyboard(getCtxSession(ctx))
             );
             return;
@@ -24,10 +25,10 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
 
         if (text && isValidUrl(text)) {
             (ctx.wizard.state as any).link = text;
-            ctx.reply("Введите название для ссылки");
+            ctx.reply(MSG.enterQueryName);
             ctx.wizard.next();
         } else {
-            ctx.replyWithMarkdownV2("*Неверная ссылка*\nпример:\n\n_https://cars\\.av\\.by/filter_", { disable_web_page_preview: true });
+            ctx.replyWithMarkdownV2(MSG.invalidQueryLink, { disable_web_page_preview: true });
         }
     },
     (ctx) => {
@@ -37,7 +38,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
         if (text === "Отмена") {
             ctx.scene.leave();
             ctx.replyWithMarkdownV2(
-                '〽 *Главное меню*', 
+                MSG.mainMenu, 
                 getMainMenuKeyboard(getCtxSession(ctx))
             );
             return;
@@ -45,7 +46,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
         
         if (text && !state.loading) {
             const query: Query = {
-                id: uuidv4(),
+                id: uuid.generate(),
                 name: text,
                 link: state.link,
                 checkFrequency: CheckFrequency.Day1,
@@ -60,13 +61,13 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
                     next() {
                         session.get(ctx.from.id).queries.push(query);
                         ctx.reply(
-                            "Ваша ссылка успешно сохранена",
+                            MSG.querySaved,
                             getMainMenuKeyboard(session.get(ctx.from.id))
                         );
                         ctx.scene.leave();
                     },
                     error() {
-                        ctx.reply("Произошла ошикба при сохранении");
+                        ctx.reply(MSG.errorDuringSaving);
                         ctx.scene.leave();
                     }
                 });
