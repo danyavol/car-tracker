@@ -6,8 +6,8 @@ import { Markup } from "telegraf";
 
 export function getMainMenuKeyboard(session: SessionData) {
 	return Markup.keyboard([
-        ['💾 Добавить авто'],
-        [{ text: '🚗 Мои авто', hide: !session.queries.length }]
+        [{ text: '🚗 Мои запросы', hide: !session.queries.length }],
+        ['💾 Новый запрос'],
     ]).resize();
 }
 

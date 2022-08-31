@@ -1,5 +1,4 @@
 import { Markup, Scenes, session } from 'telegraf';
-import { MessageEntity } from 'telegraf/typings/core/types/typegram';
 import { bot } from './config';
 import { Action } from './interfaces/actions.interface';
 import { getCarListKeyboard, getCarSettingsKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
@@ -11,11 +10,8 @@ import { getCtxSession } from './services/telegraf.service';
 
 bot.use(sessionMiddleware);
 
-
-
 /** Stage middleware */
 const stage = new Scenes.Stage<Scenes.WizardContext>([addCarScene]);
-
 bot.use(session());
 bot.use(stage.middleware());
 
@@ -26,16 +22,16 @@ bot.start((ctx) => {
     );
 });
 
-bot.hears(/добавить авто/i, (ctx) => {
-    ctx.reply('Введите ссылку', Markup.keyboard([["Отмена"]]).resize());
+bot.hears(/новый запрос/i, (ctx) => {
+    ctx.replyWithMarkdownV2('Введите ссылку. Поддерживаются следующие сайты:\n\n_cars.av.by_', Markup.keyboard([["Отмена"]]).resize());
     ctx.scene.enter('addCar', null, true);
 });
 
-bot.hears(/мои авто/i, (ctx) => {
+bot.hears(/мои запросы/i, (ctx) => {
     const session = getCtxSession(ctx);
-    const empty = session.queries.length ? "" : "\n\n_Вы еще не добавляли авто_";
+    const empty = session.queries.length ? "" : "\n\n_У Вас нету запросов_";
 	ctx.replyWithMarkdownV2(
-        "*Ваши сохраненные авто:*" + empty, 
+        "*Ваши сохраненные запросы:*" + empty, 
         getCarListKeyboard(session)
     )
 });
@@ -56,7 +52,10 @@ bot.on('callback_query', (ctx) => {
             );
             break;
         case Action.CheckCar:
-            ctx.reply("Началась проверка по данному авто");
+            ctx.replyWithMarkdownV2(
+                `Началась проверка по запросу [${escapeReservedSymbols(query.name)}](${query.link})`, 
+                { disable_web_page_preview: true }
+            );
             parseAndSaveCar(query).subscribe((notices) => {
                 const hasChanges = !notices.length ? '\n\n_Изменений не найдено_' : '';
                 ctx.replyWithMarkdownV2("Проверка закончена" + hasChanges).then(() => {
