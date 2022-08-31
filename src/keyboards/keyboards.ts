@@ -43,7 +43,7 @@ export function getCarSettingsKeyboard(query: Query) {
         }],
         [{ 
             callback_data: JSON.stringify({ 
-                action: Action.Delete, queryId: query.id
+                action: Action.ConfirmDeleteQuery, queryId: query.id
             }),
             text: "❌ Удалить"
         }],
@@ -70,4 +70,17 @@ export function getFrequencyKeyboard(query: Query) {
             text: "« Назад"
         }]
     ]);
+}
+
+export function getDeleteQueryKeyboard(query: Query) {
+    return Markup.inlineKeyboard([
+        [{
+            text: "Да",
+            callback_data: JSON.stringify({action: Action.DeleteQuery, queryId: query.id}),
+        },
+        {
+            text: "Нет",
+            callback_data: JSON.stringify({action: Action.OpenCar, queryId: query.id}),
+        }]
+    ])
 }

@@ -1,6 +1,7 @@
 export enum Action {
     Rename,
-    Delete,
+    ConfirmDeleteQuery,
+    DeleteQuery,
     CheckFrequency,
     UpdateCheckFrequency,
     RunCarCheck,

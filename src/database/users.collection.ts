@@ -14,7 +14,6 @@ export class UsersCollection {
         
         return this.dbReady$.pipe( 
             switchMap(() => from(getDoc(ref)).pipe(
-                first(),
                 map((snap) => {
                     return snap.data();
                 }),
@@ -22,7 +21,8 @@ export class UsersCollection {
                     console.error('Error during getting user!', err);
                     return EMPTY;
                 })
-            ))
+            )),
+            first()
         );
     }
 
@@ -31,12 +31,12 @@ export class UsersCollection {
 
         return this.dbReady$.pipe( 
             switchMap(() => from(setDoc(ref, user)).pipe(
-                first(),
                 catchError((err) => {
                     console.error('Error during saving the user!', err);
                     return EMPTY;
                 })
-            ))
+            )),
+            first()
         );
     }
 }

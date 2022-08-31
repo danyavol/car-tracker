@@ -1,9 +1,10 @@
+import { catchError, finalize, map, of } from 'rxjs';
 import { Markup, Scenes, session } from 'telegraf';
 import { bot } from './config';
 import { db } from './database/database';
 import { Action } from './interfaces/actions.interface';
 import { Query } from './interfaces/query.interface';
-import { getCarListKeyboard, getCarSettingsKeyboard, getFrequencyKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
+import { getCarListKeyboard, getCarSettingsKeyboard, getDeleteQueryKeyboard, getFrequencyKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
 import { MSG } from './metadata';
 import { sessionMiddleware } from './middlewares/session.middleware';
 import { parseAndSaveCar } from './parsers/parser';
@@ -43,15 +44,14 @@ bot.hears(/мои запросы/i, (ctx) => {
 
 bot.on('callback_query', (ctx) => {
     const data = JSON.parse(ctx.callbackQuery.data);
-    const session = getCtxSession(ctx);
-    const query = session.queries.find(q => q.id === data.queryId);
+    const currSession = getCtxSession(ctx);
+    const query = currSession.queries.find(q => q.id === data.queryId);
 
     switch(data.action) {
         case Action.OpenCarsList:
-            const session = getCtxSession(ctx);
             ctx.editMessageText(
-                MSG.queryList(!!session.queries.length), 
-                { parse_mode: "MarkdownV2", reply_markup: getCarListKeyboard(session).reply_markup }
+                MSG.queryList(!!currSession.queries.length), 
+                { parse_mode: "MarkdownV2", reply_markup: getCarListKeyboard(currSession).reply_markup }
             );
             break;
         case Action.OpenCar:
@@ -94,8 +94,9 @@ bot.on('callback_query', (ctx) => {
             db.queries.saveQuery(newQuery).subscribe({
                 next() {
                     query.checkFrequency = data.fr;
+                    ctx.answerCbQuery("Успешно сохранено");
                     ctx.editMessageText(
-                        MSG.changeCheckFrequency(query) + '\n\n*Успешно сохранено*',
+                        MSG.changeCheckFrequency(query),
                         {
                             parse_mode: "MarkdownV2",
                             disable_web_page_preview: true,
@@ -104,8 +105,9 @@ bot.on('callback_query', (ctx) => {
                     )
                 },
                 error() {
+                    ctx.answerCbQuery("Произошла ошибка при сохранении");
                     ctx.editMessageText(
-                        MSG.changeCheckFrequency(query) + '\n\n*Произошла ошибка при сохранении*',
+                        MSG.changeCheckFrequency(query),
                         {
                             parse_mode: "MarkdownV2",
                             disable_web_page_preview: true,
@@ -113,6 +115,33 @@ bot.on('callback_query', (ctx) => {
                         }
                     )
                 }
+            });
+            break;
+        case Action.ConfirmDeleteQuery:
+            ctx.editMessageText(
+                MSG.confirmDeleteQuery(query),
+                {
+                    disable_web_page_preview: true,
+                    parse_mode: "MarkdownV2",
+                    reply_markup: getDeleteQueryKeyboard(query).reply_markup
+                }
+            );
+            break;
+        case Action.DeleteQuery:
+            db.queries.deleteQuery(query.id).pipe(
+                map(() => {
+                    const index = currSession.queries.findIndex(q => q.id === query.id);
+                    currSession.queries.splice(index, 1);
+
+                    return MSG.queryDeleted;
+                }),
+                catchError(() => of(MSG.queryDeleteError))
+            ).subscribe((msg) => {
+                ctx.answerCbQuery(msg);
+                ctx.editMessageText(MSG.queryList(!!currSession.queries.length), {
+                    parse_mode: "MarkdownV2",
+                    reply_markup: getCarListKeyboard(currSession).reply_markup
+                });
             });
             break;
         default:
