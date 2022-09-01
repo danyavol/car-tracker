@@ -1,7 +1,7 @@
-import { Car } from "src/interfaces/car.interface";
-import { CompareResult } from "src/interfaces/compare.interface";
-import { ChangeNotice } from "src/interfaces/parser.interface";
-import { Query } from "src/interfaces/query.interface";
+import { Car } from "../interfaces/car.interface";
+import { CompareResult } from "../interfaces/compare.interface";
+import { ChangeNotice } from "../interfaces/parser.interface";
+import { Query } from "../interfaces/query.interface";
 import { escapeReservedSymbols as escape } from "./escape.service";
 import { formatMileage, formatPrice, formatYear } from "./formater.service";
 

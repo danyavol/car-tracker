@@ -1,6 +1,6 @@
 import { collection, CollectionReference, doc, DocumentReference, Firestore, getDoc, getDocs, setDoc } from "firebase/firestore/lite";
 import { catchError, EMPTY, first, from, map, Observable, switchMap, tap } from "rxjs";
-import { User } from "src/interfaces/user.interface";
+import { User } from "../interfaces/user.interface";
 import { Collections } from "./database";
 
 export class UsersCollection {

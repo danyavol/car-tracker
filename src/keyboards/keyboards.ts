@@ -1,7 +1,7 @@
-import { Action } from "src/interfaces/actions.interface";
-import { CheckFrequency } from "src/interfaces/check-frequency.interface";
-import { Query } from "src/interfaces/query.interface";
-import { getCheckFrequencyName } from "src/services/query.service";
+import { Action } from "../interfaces/actions.interface";
+import { CheckFrequency } from "../interfaces/check-frequency.interface";
+import { Query } from "../interfaces/query.interface";
+import { getCheckFrequencyName } from "../services/query.service";
 import { Markup } from "telegraf";
 
 export function getMainMenuKeyboard(queries: Query[]) {

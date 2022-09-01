@@ -1,15 +1,15 @@
-import { db } from "src/database/database";
-import { CheckFrequency } from "src/interfaces/check-frequency.interface";
-import { Query } from "src/interfaces/query.interface";
-import { getMainMenuKeyboard } from "src/keyboards/keyboards";
-import { isValidUrl } from "src/parsers/parser";
-import { allQueries } from "src/services/storage.service";
+import { db } from "../database/database";
+import { CheckFrequency } from "../interfaces/check-frequency.interface";
+import { Query } from "../interfaces/query.interface";
+import { getMainMenuKeyboard } from "../keyboards/keyboards";
+import { isValidUrl } from "../parsers/parser";
+import { allQueries } from "../services/storage.service";
 import { Scenes } from "telegraf";
 import { Message } from "telegraf/typings/core/types/typegram";
 import uuid from "short-uuid";
-import { MSG } from "src/metadata";
-import { updateTimeout } from "src/services/auto-check.service";
-import { getCtxQueries } from "src/services/telegraf.service";
+import { MSG } from "../metadata";
+import { updateTimeout } from "../services/auto-check.service";
+import { getCtxQueries } from "../services/telegraf.service";
 
 export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
     (ctx) => {

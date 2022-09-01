@@ -1,7 +1,7 @@
-import { db } from "src/database/database";
-import { User } from "src/interfaces/user.interface";
-import { allUsers } from "src/services/storage.service";
-import { getSender } from "src/services/telegraf.service";
+import { db } from "../database/database";
+import { User } from "../interfaces/user.interface";
+import { allUsers } from "../services/storage.service";
+import { getSender } from "../services/telegraf.service";
 import { Context, MiddlewareFn } from "telegraf";
 
 export const registerUserMiddleware: MiddlewareFn<Context> = (ctx, next) => {

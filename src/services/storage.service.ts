@@ -1,5 +1,5 @@
-import { Query } from "src/interfaces/query.interface";
-import { User } from "src/interfaces/user.interface";
+import { Query } from "../interfaces/query.interface";
+import { User } from "../interfaces/user.interface";
 
 export const allUsers: User[] = [];
 

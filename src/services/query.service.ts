@@ -1,4 +1,4 @@
-import { CheckFrequency } from "src/interfaces/check-frequency.interface";
+import { CheckFrequency } from "../interfaces/check-frequency.interface";
 
 export function getCheckFrequencyName(checkFrequency: CheckFrequency): string {
     switch(checkFrequency) {

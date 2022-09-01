@@ -1,4 +1,4 @@
-import { Query } from "src/interfaces/query.interface";
+import { Query } from "../interfaces/query.interface";
 import { Context } from "telegraf";
 import { Update, User } from "telegraf/typings/core/types/typegram";
 import { allQueries } from "./storage.service";

@@ -1,6 +1,6 @@
-import { bot } from "src/config";
-import { Query } from "src/interfaces/query.interface";
-import { parseAndSaveCar } from "src/parsers/parser";
+import { bot } from "../config";
+import { Query } from "../interfaces/query.interface";
+import { parseAndSaveCar } from "../parsers/parser";
 import { getNextCheckDate, getTimeUntilStart } from "./query.service";
 
 const timersMap = new Map<string, NodeJS.Timeout>();

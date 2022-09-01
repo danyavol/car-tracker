@@ -1,11 +1,11 @@
 import { first, map, Observable, switchMap, tap } from "rxjs";
-import { db } from "src/database/database";
-import { Car } from "src/interfaces/car.interface";
-import { ChangeNotice, Parser } from "src/interfaces/parser.interface";
-import { Query } from "src/interfaces/query.interface";
-import { getChangeMsgs } from "src/services/change-msg.service";
-import { compareCars } from "src/services/compare.service";
-import { allQueries } from "src/services/storage.service";
+import { db } from "../database/database";
+import { Car } from "../interfaces/car.interface";
+import { ChangeNotice, Parser } from "../interfaces/parser.interface";
+import { Query } from "../interfaces/query.interface";
+import { getChangeMsgs } from "../services/change-msg.service";
+import { compareCars } from "../services/compare.service";
+import { allQueries } from "../services/storage.service";
 import { AvByParser } from "./av-by.parser";
 
 export function isValidUrl(url: string): boolean {

@@ -1,6 +1,6 @@
 import { catchError, combineLatestAll, defer, from, map, mergeAll, Observable, of, switchMap } from "rxjs";
-import { Car, GetAllCarsResult } from "src/interfaces/car.interface";
-import { Parser } from "src/interfaces/parser.interface";
+import { Car, GetAllCarsResult } from "../interfaces/car.interface";
+import { Parser } from "../interfaces/parser.interface";
 import { JSDOM } from "jsdom";
 import axios from "axios";
 

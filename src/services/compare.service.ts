@@ -1,5 +1,5 @@
-import { Car } from "src/interfaces/car.interface";
-import { CompareConfig, CompareResult } from "src/interfaces/compare.interface";
+import { Car } from "../interfaces/car.interface";
+import { CompareConfig, CompareResult } from "../interfaces/compare.interface";
 
 function compareArrays<T>(oldArray: T[], newArray: T[], config: CompareConfig<T>): CompareResult<T> {
     const result: CompareResult<T> = {

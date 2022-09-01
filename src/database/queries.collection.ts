@@ -1,6 +1,6 @@
 import { collection, deleteDoc, doc, DocumentData, DocumentReference, Firestore, getDoc, getDocs, QueryDocumentSnapshot, setDoc, Timestamp } from "firebase/firestore/lite";
 import { catchError, EMPTY, first, from, map, Observable, switchMap } from "rxjs";
-import { FirestoreQuery, Query } from "src/interfaces/query.interface";
+import { FirestoreQuery, Query } from "../interfaces/query.interface";
 import { Collections } from "./database";
 
 const queryConverter = {
