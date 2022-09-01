@@ -9,6 +9,7 @@ import { Scenes } from "telegraf";
 import { Message } from "telegraf/typings/core/types/typegram";
 import uuid from "short-uuid";
 import { MSG } from "src/metadata";
+import { updateTimeout } from "src/services/auto-check.service";
 
 export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
     (ctx) => {
@@ -25,7 +26,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
 
         if (text && isValidUrl(text)) {
             (ctx.wizard.state as any).link = text;
-            ctx.reply(MSG.enterQueryName);
+            ctx.replyWithMarkdownV2(MSG.enterQueryName);
             ctx.wizard.next();
         } else {
             ctx.replyWithMarkdownV2(MSG.invalidQueryLink, { disable_web_page_preview: true });
@@ -50,7 +51,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
                 name: text,
                 link: state.link,
                 checkFrequency: CheckFrequency.Day1,
-                nextCheck: null,
+                nextCheck: new Date(), // To run first check immediately
                 cars: null,
                 userId: ctx.from.id,
             };
@@ -60,6 +61,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
                 {
                     next() {
                         session.get(ctx.from.id).queries.push(query);
+                        updateTimeout(query);
                         ctx.reply(
                             MSG.querySaved,
                             getMainMenuKeyboard(session.get(ctx.from.id))

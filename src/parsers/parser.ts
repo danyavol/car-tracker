@@ -1,4 +1,4 @@
-import { map, Observable, switchMap, tap } from "rxjs";
+import { first, map, Observable, switchMap, tap } from "rxjs";
 import { db } from "src/database/database";
 import { Car } from "src/interfaces/car.interface";
 import { ChangeNotice, Parser } from "src/interfaces/parser.interface";
@@ -44,7 +44,8 @@ export function parseAndSaveCar(query: Query): Observable<ChangeNotice[]> {
                 return changeNotices;
             })
         )),
-    )
+        first()
+    );
 }
 
 function getCarsForSave(oldCars: Car[], newCars: Car[], hadErrors: boolean): Car[] {

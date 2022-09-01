@@ -1,4 +1,4 @@
-import { catchError, finalize, map, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { Markup, Scenes, session } from 'telegraf';
 import { bot } from './config';
 import { db } from './database/database';
@@ -9,8 +9,8 @@ import { MSG } from './metadata';
 import { sessionMiddleware } from './middlewares/session.middleware';
 import { parseAndSaveCar } from './parsers/parser';
 import { addCarScene } from './scenes/add-car.scene';
-import { escapeReservedSymbols as escape } from './services/escape.service';
-import { getQueryName } from './services/query.service';
+import { updateTimeout } from './services/auto-check.service';
+import { getNextCheckDate } from './services/query.service';
 import { getCtxSession } from './services/telegraf.service';
 
 bot.use(sessionMiddleware);
@@ -70,6 +70,7 @@ bot.on('callback_query', (ctx) => {
                 MSG.queryCheckStarted(query), 
                 { disable_web_page_preview: true }
             );
+            query.nextCheck = getNextCheckDate(query.checkFrequency);
             parseAndSaveCar(query).subscribe((notices) => {
                 ctx.replyWithMarkdownV2(MSG.queryCheckEnded(!!notices.length)).then(() => {
                     notices.forEach(notice => {
@@ -90,10 +91,16 @@ bot.on('callback_query', (ctx) => {
             break;
         case Action.UpdateCheckFrequency:
             if (query.checkFrequency === data.fr) break;
-            const newQuery: Query = { ...query, checkFrequency: data.fr };
+            const newQuery: Query = { 
+                ...query, 
+                checkFrequency: data.fr, 
+                nextCheck: getNextCheckDate(data.fr) 
+            };
             db.queries.saveQuery(newQuery).subscribe({
                 next() {
-                    query.checkFrequency = data.fr;
+                    query.checkFrequency = newQuery.checkFrequency;
+                    query.nextCheck = newQuery.nextCheck;
+                    updateTimeout(query);
                     ctx.answerCbQuery("Успешно сохранено");
                     ctx.editMessageText(
                         MSG.changeCheckFrequency(query),

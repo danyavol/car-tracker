@@ -1,6 +1,4 @@
 import { CheckFrequency } from "src/interfaces/check-frequency.interface";
-import { Query } from "src/interfaces/query.interface";
-import { escapeReservedSymbols } from "./escape.service";
 
 export function getCheckFrequencyName(checkFrequency: CheckFrequency): string {
     switch(checkFrequency) {
@@ -14,6 +12,32 @@ export function getCheckFrequencyName(checkFrequency: CheckFrequency): string {
     }
 }
 
-export function getQueryName(query: Query): string {
-    return `[${escapeReservedSymbols(query.name)}](${query.link})`;
+export function getNextCheckDate(frequency: CheckFrequency): Date | null {
+    const date = new Date();
+
+    switch (frequency) {
+        case CheckFrequency.Never: return null;
+        case CheckFrequency.Hour1: 
+            date.setHours(date.getHours() + 1);
+            break;
+        case CheckFrequency.Hour6:
+            date.setHours(date.getHours() + 6);
+            break;
+        case CheckFrequency.Day1:
+            date.setDate(date.getDate() + 1);
+            break;
+        case CheckFrequency.Day3:
+            date.setDate(date.getDate() + 3);
+            break;
+        case CheckFrequency.Day7:
+            date.setDate(date.getDate() + 7);
+            break;
+    }
+    return date;
+}
+
+export function getTimeUntilStart(startDate: Date | null): number | null {
+    if (!startDate) return null;
+    const now = new Date();
+    return startDate.getTime() - now.getTime();
 }

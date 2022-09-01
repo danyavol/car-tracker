@@ -7,6 +7,6 @@ export interface Query {
     link: string;
     userId: number;
     checkFrequency: CheckFrequency;
-    nextCheck: string;
+    nextCheck: Date;
     cars: Car[] | null;
 }

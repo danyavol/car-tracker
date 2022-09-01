@@ -10,11 +10,11 @@ export const MSG = {
         + (hasQueries ? '' : '\n\n_У Вас нету запросов_'), 
     queryCheckStarted: (query: Query) => `Началась проверка по запросу ${getQueryName(query)}`,
     queryCheckEnded: (hasChanges: boolean) => 'Проверка завершена' + (hasChanges ? '' : '\n\n_Изменений не найдено_'),
-    enterQueryLink: 'Введите ссылку\\. Поддерживаются следующие сайты:\n'
+    enterQueryLink: 'Введите ссылку запроса\\. Поддерживаются следующие сайты:\n'
         + `\n_${escape('cars.av.by')}_`,
-    enterQueryName: "Введите название для ссылки",
+    enterQueryName: "Введите название запроса\\. Благодаря названию Вы сможете отличать запросы друг от друга",
     invalidQueryLink: "*Неверная ссылка*\nпример:\n\n_https://cars\\.av\\.by/filter_",
-    querySaved: "Ваша ссылка успешно сохранена.",
+    querySaved: "Ваша ссылка успешно сохранена",
     errorDuringSaving: "Произошла ошикба при сохранении",
     queryInfo: (query: Query) => `Запрос: ${getQueryName(query)}`
         + `\n\nАвто\\-проверка: *${getCheckFrequencyName(query.checkFrequency)}*`,
