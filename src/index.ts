@@ -1,4 +1,4 @@
-import { catchError, map, of } from 'rxjs';
+import { catchError, combineLatest, map, of } from 'rxjs';
 import { Markup, Scenes, session } from 'telegraf';
 import { bot } from './config';
 import { db } from './database/database';
@@ -6,14 +6,15 @@ import { Action } from './interfaces/actions.interface';
 import { Query } from './interfaces/query.interface';
 import { getCarListKeyboard, getCarSettingsKeyboard, getDeleteQueryKeyboard, getFrequencyKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
 import { MSG } from './metadata';
-import { sessionMiddleware } from './middlewares/session.middleware';
+import { registerUserMiddleware } from './middlewares/register-user.middleware';
 import { parseAndSaveCar } from './parsers/parser';
 import { addCarScene } from './scenes/add-car.scene';
 import { updateTimeout } from './services/auto-check.service';
 import { getNextCheckDate } from './services/query.service';
-import { getCtxSession } from './services/telegraf.service';
+import { allQueries, allUsers } from './services/storage.service';
+import { getCtxQueries } from './services/telegraf.service';
 
-bot.use(sessionMiddleware);
+bot.use(registerUserMiddleware);
 
 /** Stage middleware */
 const stage = new Scenes.Stage<Scenes.WizardContext>([addCarScene]);
@@ -23,7 +24,7 @@ bot.use(stage.middleware());
 bot.start((ctx) => {
     ctx.replyWithMarkdownV2(
         MSG.mainMenu, 
-        getMainMenuKeyboard(getCtxSession(ctx))
+        getMainMenuKeyboard(getCtxQueries(ctx))
     );
 });
 
@@ -35,23 +36,23 @@ bot.hears(/новый запрос/i, (ctx) => {
 });
 
 bot.hears(/мои запросы/i, (ctx) => {
-    const session = getCtxSession(ctx);
+    const queries = getCtxQueries(ctx);
 	ctx.replyWithMarkdownV2(
-        MSG.queryList(!!session.queries.length), 
-        getCarListKeyboard(session)
+        MSG.queryList(!!queries.length), 
+        getCarListKeyboard(queries)
     );
 });
 
 bot.on('callback_query', (ctx) => {
     const data = JSON.parse(ctx.callbackQuery.data);
-    const currSession = getCtxSession(ctx);
-    const query = currSession.queries.find(q => q.id === data.queryId);
+    const queries = getCtxQueries(ctx);
+    const query = queries.find(q => q.id === data.queryId);
 
     switch(data.action) {
         case Action.OpenCarsList:
             ctx.editMessageText(
-                MSG.queryList(!!currSession.queries.length), 
-                { parse_mode: "MarkdownV2", reply_markup: getCarListKeyboard(currSession).reply_markup }
+                MSG.queryList(!!queries.length), 
+                { parse_mode: "MarkdownV2", reply_markup: getCarListKeyboard(queries).reply_markup }
             );
             break;
         case Action.OpenCar:
@@ -137,17 +138,22 @@ bot.on('callback_query', (ctx) => {
         case Action.DeleteQuery:
             db.queries.deleteQuery(query.id).pipe(
                 map(() => {
-                    const index = currSession.queries.findIndex(q => q.id === query.id);
-                    currSession.queries.splice(index, 1);
+                    
 
                     return MSG.queryDeleted;
                 }),
                 catchError(() => of(MSG.queryDeleteError))
             ).subscribe((msg) => {
+                const index = allQueries.findIndex(q => q.id === query.id);
+                allQueries.splice(index, 1);
+
+                const index2 = queries.findIndex(q => q.id === query.id);
+                queries.splice(index2, 1);
+                
                 ctx.answerCbQuery(msg);
-                ctx.editMessageText(MSG.queryList(!!currSession.queries.length), {
+                ctx.editMessageText(MSG.queryList(!!queries.length), {
                     parse_mode: "MarkdownV2",
-                    reply_markup: getCarListKeyboard(currSession).reply_markup
+                    reply_markup: getCarListKeyboard(queries).reply_markup
                 });
             });
             break;
@@ -157,9 +163,17 @@ bot.on('callback_query', (ctx) => {
     }
 });
 
-
-
-bot.launch();
+// Load queries
+combineLatest([
+    db.users.getAllUsers(),
+    db.queries.getAllQueries()
+]).subscribe(([users, queries]) => {
+    allUsers.push(...users);
+    allQueries.push(...queries);
+    allQueries.forEach(q => updateTimeout(q));
+    bot.launch();
+    console.log('Bot has started');
+});
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));

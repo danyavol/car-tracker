@@ -19,7 +19,7 @@ export const MSG = {
     queryInfo: (query: Query) => `Запрос: ${getQueryName(query)}`
         + `\n\nАвто\\-проверка: *${getCheckFrequencyName(query.checkFrequency)}*`,
     confirmDeleteQuery: (query: Query) => `Вы уверены, что хотите удалить запрос ${getQueryName(query)}?`,
-    queryDeleted: 'Запрос удален успешно',
+    queryDeleted: 'Запрос успешно удален',
     queryDeleteError: 'Произошла ошибка во время удаления запроса'
 };
 

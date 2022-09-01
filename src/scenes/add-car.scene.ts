@@ -3,13 +3,13 @@ import { CheckFrequency } from "src/interfaces/check-frequency.interface";
 import { Query } from "src/interfaces/query.interface";
 import { getMainMenuKeyboard } from "src/keyboards/keyboards";
 import { isValidUrl } from "src/parsers/parser";
-import { getCtxSession } from "src/services/telegraf.service";
-import { session } from "src/services/user-session.service";
+import { allQueries } from "src/services/storage.service";
 import { Scenes } from "telegraf";
 import { Message } from "telegraf/typings/core/types/typegram";
 import uuid from "short-uuid";
 import { MSG } from "src/metadata";
 import { updateTimeout } from "src/services/auto-check.service";
+import { getCtxQueries } from "src/services/telegraf.service";
 
 export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
     (ctx) => {
@@ -19,7 +19,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
             ctx.scene.leave();
             ctx.replyWithMarkdownV2(
                 MSG.mainMenu, 
-                getMainMenuKeyboard(getCtxSession(ctx))
+                getMainMenuKeyboard(getCtxQueries(ctx))
             );
             return;
         }
@@ -36,11 +36,13 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
         const { text } = ctx.message as Message.TextMessage;
         const state = ctx.wizard.state as any;
 
+        const ctxQueries = getCtxQueries(ctx);
+
         if (text === "Отмена") {
             ctx.scene.leave();
             ctx.replyWithMarkdownV2(
                 MSG.mainMenu, 
-                getMainMenuKeyboard(getCtxSession(ctx))
+                getMainMenuKeyboard(ctxQueries)
             );
             return;
         }
@@ -60,11 +62,11 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
             db.queries.saveQuery(query).subscribe(
                 {
                     next() {
-                        session.get(ctx.from.id).queries.push(query);
+                        allQueries.push(query);
                         updateTimeout(query);
                         ctx.reply(
                             MSG.querySaved,
-                            getMainMenuKeyboard(session.get(ctx.from.id))
+                            getMainMenuKeyboard(ctxQueries)
                         );
                         ctx.scene.leave();
                     },

@@ -1,7 +1,19 @@
-import { collection, CollectionReference, deleteDoc, doc, DocumentReference, Firestore, getDoc, getDocs, query, setDoc, where } from "firebase/firestore/lite";
+import { collection, deleteDoc, doc, DocumentData, DocumentReference, Firestore, getDoc, getDocs, QueryDocumentSnapshot, setDoc, Timestamp } from "firebase/firestore/lite";
 import { catchError, EMPTY, first, from, map, Observable, switchMap } from "rxjs";
-import { Query } from "src/interfaces/query.interface";
+import { FirestoreQuery, Query } from "src/interfaces/query.interface";
 import { Collections } from "./database";
+
+const queryConverter = {
+    toFirestore(query: Query): DocumentData {
+      return query;
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot
+    ): Query {
+      const data = snapshot.data() as FirestoreQuery;
+      return { ...data, nextCheck: data.nextCheck.toDate()};
+    }
+  };
 
 export class QueriesCollection {
     constructor(
@@ -25,11 +37,11 @@ export class QueriesCollection {
         );
     }
 
-    getUserQueries(userId: number): Observable<Query[]> {
-        const ref = collection(this.db, Collections.Queries) as CollectionReference<Query>;
-        const dbQuery = query(ref, where("userId", "==", userId)); 
+    getAllQueries(): Observable<Query[]> {
+        const ref = collection(this.db, Collections.Queries).withConverter(queryConverter);
+
         return this.dbReady$.pipe( 
-            switchMap(() => from(getDocs(dbQuery)).pipe(
+            switchMap(() => from(getDocs(ref)).pipe(
                 map((snap) => {
                     return snap.docs.map(doc => doc.data());
                 }),

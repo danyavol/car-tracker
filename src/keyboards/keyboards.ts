@@ -1,20 +1,19 @@
 import { Action } from "src/interfaces/actions.interface";
 import { CheckFrequency } from "src/interfaces/check-frequency.interface";
 import { Query } from "src/interfaces/query.interface";
-import { SessionData } from "src/interfaces/session.interface";
 import { getCheckFrequencyName } from "src/services/query.service";
 import { Markup } from "telegraf";
 
-export function getMainMenuKeyboard(session: SessionData) {
+export function getMainMenuKeyboard(queries: Query[]) {
 	return Markup.keyboard([
-        [{ text: '🚗 Мои запросы', hide: !session.queries.length }],
+        [{ text: '🚗 Мои запросы', hide: !queries.length }],
         ['💾 Новый запрос'],
     ]).resize();
 }
 
-export function getCarListKeyboard(session: SessionData) {
+export function getCarListKeyboard(queries: Query[]) {
     return Markup.inlineKeyboard([
-        ...session.queries.map(q => [{ callback_data: 
+        ...queries.map(q => [{ callback_data: 
             JSON.stringify({action: Action.OpenCar, queryId: q.id}),
             text: q.name 
         }])

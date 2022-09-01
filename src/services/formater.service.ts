@@ -7,5 +7,5 @@ export function formatMileage(mileage: number): string {
 }
 
 export function formatYear(year: number): string {
-    return year + ' г.';
+    return year + ' г';
 }

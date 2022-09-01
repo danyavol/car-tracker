@@ -5,7 +5,7 @@ import { ChangeNotice, Parser } from "src/interfaces/parser.interface";
 import { Query } from "src/interfaces/query.interface";
 import { getChangeMsgs } from "src/services/change-msg.service";
 import { compareCars } from "src/services/compare.service";
-import { session } from "src/services/user-session.service";
+import { allQueries } from "src/services/storage.service";
 import { AvByParser } from "./av-by.parser";
 
 export function isValidUrl(url: string): boolean {
@@ -20,7 +20,6 @@ export function getParser(url: string): Parser | null {
 }
 
 export function parseAndSaveCar(query: Query): Observable<ChangeNotice[]> {
-    query = { ...query };
     return getParser(query.link).getAllCars().pipe(
         map((result) => {
             let changeNotices: ChangeNotice[] = []
@@ -35,14 +34,7 @@ export function parseAndSaveCar(query: Query): Observable<ChangeNotice[]> {
             return { changeNotices, query };
         }),
         switchMap(({query, changeNotices}) => db.queries.saveQuery(query).pipe(
-            tap(() => {
-                const sessionData = session.get(query.userId);
-                const index = sessionData.queries.findIndex(q => q.id = query.id);
-                sessionData.queries[index] = query;
-            }),
-            map(() => {
-                return changeNotices;
-            })
+            map(() => changeNotices)
         )),
         first()
     );
