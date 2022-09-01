@@ -167,12 +167,17 @@ bot.on('callback_query', (ctx) => {
 combineLatest([
     db.users.getAllUsers(),
     db.queries.getAllQueries()
-]).subscribe(([users, queries]) => {
-    allUsers.push(...users);
-    allQueries.push(...queries);
-    allQueries.forEach(q => updateTimeout(q));
-    bot.launch();
-    console.log('Bot has started');
+]).subscribe({
+    next([users, queries]) {
+        allUsers.push(...users);
+        allQueries.push(...queries);
+        allQueries.forEach(q => updateTimeout(q));
+        bot.launch();
+        console.log('Bot has started');
+    },
+    error(err) {
+        throw Error(err);
+    }
 });
 
 // Enable graceful stop
