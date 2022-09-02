@@ -1,10 +1,10 @@
-import { catchError, combineLatest, map, of } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { Markup, Scenes, session } from 'telegraf';
 import { bot } from './config';
 import { db } from './database/database';
 import { Action } from './interfaces/actions.interface';
 import { Query } from './interfaces/query.interface';
-import { getQueryListKeyboard, getQuerySettingsKeyboard, getDeleteQueryKeyboard, getFrequencyKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
+import { getDeleteQueryKeyboard, getFrequencyKeyboard, getMainMenuKeyboard, getQueryListKeyboard, getQuerySettingsKeyboard } from './keyboards/keyboards';
 import { MSG } from './metadata';
 import { registerUserMiddleware } from './middlewares/register-user.middleware';
 import { runQueryScan } from './parsers/parser';
@@ -26,6 +26,20 @@ bot.start((ctx) => {
     ctx.replyWithMarkdownV2(
         MSG.mainMenu, 
         getMainMenuKeyboard(getCtxQueries(ctx))
+    );
+});
+
+bot.help((ctx) => {
+    ctx.replyWithMarkdownV2(
+        `🔸 Данный бот предназначен для отслеживания изменений на рынке авто\\.`
+        + `\n\n🔸 Благодаря этому Вы можете одним из первых узнать о появлении нового объявления`
+        + ` или о снижении цены на автомобиль\\.`
+        + `\n\n🔸 Создавайте запросы, устанавливайте частоту автоматической проверки`
+        + ` и бот будет уведомлять Вас в случае обнаружения изменений\\.`
+        + `\n\nНа данный момент поддерживаются следующие платформы:`
+        + `\n[av\\.by](http://cars.av.by/)`
+        + `\n\nОтправьте команду /start для открытия главного меню\\.`,
+        { disable_web_page_preview: true }
     );
 });
 
