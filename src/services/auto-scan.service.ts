@@ -10,7 +10,7 @@ export function updateTimeout(query: Query): void {
         clearTimeout(timersMap.get(query.id));
     }
     
-    const time = getTimeUntilDate(query.nextCheck);
+    const time = getTimeUntilDate(query.nextScan);
     if (time === null) return;
 
     const newTimeout = setTimeout(() => {

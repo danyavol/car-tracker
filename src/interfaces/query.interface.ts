@@ -8,11 +8,11 @@ export interface Query {
     link: string;
     userId: number;
     scanFrequency: ScanFrequency;
-    nextCheck: Date;
+    nextScan: Date | null;
     checkInProcess: boolean;
     cars: Car[] | null;
 }
 
-export interface FirestoreQuery extends Omit<Query, "nextCheck" | "checkInProcess"> {
-    nextCheck: Timestamp;
+export interface FirestoreQuery extends Omit<Query, "nextScan" | "checkInProcess"> {
+    nextScan: Timestamp;
 }

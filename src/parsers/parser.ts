@@ -22,7 +22,7 @@ export function getParser(url: string): Parser | null {
 
 export function runQueryScan(query: Query): Observable<ChangeNotice[]> {
     query.checkInProcess = true;
-    query.nextCheck = getNextScanDate(query.scanFrequency);
+    query.nextScan = getNextScanDate(query.scanFrequency);
 
     return getParser(query.link).getAllCars().pipe(
         map((result) => {

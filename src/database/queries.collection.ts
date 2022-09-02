@@ -13,7 +13,7 @@ const queryConverter = {
         snapshot: QueryDocumentSnapshot
     ): Query {
         const data = snapshot.data() as FirestoreQuery;
-        return { ...data, nextCheck: data.nextCheck.toDate(), checkInProcess: false };
+        return { ...data, nextScan: data.nextScan?.toDate() || null, checkInProcess: false };
     }
 };
 

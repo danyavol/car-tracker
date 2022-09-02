@@ -41,3 +41,14 @@ export function getTimeUntilDate(startDate: Date | null): number | null {
     const now = new Date();
     return startDate.getTime() - now.getTime();
 }
+
+export function getNextScanTitle(date: Date): string {
+    return new Intl.DateTimeFormat("ru", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZoneName: "short",
+        timeZone: "Europe/Minsk",
+    }).format(date);
+}

@@ -58,7 +58,7 @@ export const addQueryScene = new Scenes.WizardScene<Scenes.WizardContext>('addQu
                 name: text,
                 link: state.link,
                 scanFrequency: ScanFrequency.Day1,
-                nextCheck: new Date(), // To run first check immediately
+                nextScan: new Date(), // To run first check immediately
                 checkInProcess: false,
                 cars: null,
                 userId: ctx.from.id,

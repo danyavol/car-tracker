@@ -100,12 +100,12 @@ bot.on('callback_query', (ctx) => {
             const newQuery: Query = { 
                 ...query, 
                 scanFrequency: data.fr, 
-                nextCheck: getNextScanDate(data.fr) 
+                nextScan: getNextScanDate(data.fr) 
             };
             db.queries.saveQuery(newQuery).subscribe({
                 next() {
                     query.scanFrequency = newQuery.scanFrequency;
-                    query.nextCheck = newQuery.nextCheck;
+                    query.nextScan = newQuery.nextScan;
                     updateTimeout(query);
                     ctx.answerCbQuery("Успешно сохранено");
                     ctx.editMessageText(

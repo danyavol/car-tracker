@@ -1,6 +1,6 @@
 import { Query } from "./interfaces/query.interface";
 import { escapeReservedSymbols as escape } from './services/escape.service';
-import { getScanFrequencyName } from "./services/query.service";
+import { getNextScanTitle, getScanFrequencyName } from "./services/query.service";
 
 export const MSG = {
     changeCheckFrequency: (query: Query) => `Выберите как часто бот будет выполнять автоматическую проверку по запросу ${getQueryName(query)}\n\n_В случае обнаружения изменения Вы получите уведомление_`,
@@ -18,7 +18,8 @@ export const MSG = {
     querySaved: "Ваша ссылка успешно сохранена",
     errorDuringSaving: "Произошла ошикба при сохранении",
     querySettingsMenu: (query: Query) => `Запрос: ${getQueryName(query)}`
-        + `\n\nАвто\\-проверка: *${getScanFrequencyName(query.scanFrequency)}*`,
+        + `\n\nАвто\\-проверка: *${getScanFrequencyName(query.scanFrequency)}*`
+        + (query.nextScan ? `\nСлед\\. проверка: *${escape(getNextScanTitle(query.nextScan))}*` : ''),
     confirmDeleteQuery: (query: Query) => `Вы уверены, что хотите удалить запрос ${getQueryName(query)}?`,
     queryDeleted: 'Запрос успешно удален',
     queryDeleteError: 'Произошла ошибка во время удаления запроса',
