@@ -13,6 +13,7 @@ export const MSG = {
     enterQueryLink: 'Введите ссылку запроса\\. Поддерживаются следующие сайты:\n'
         + `\n_${escape('cars.av.by')}_`,
     enterQueryName: "Введите название запроса\\. Благодаря названию Вы сможете отличать запросы друг от друга",
+    renameQuery: "Введите новое название запроса",
     invalidQueryLink: "*Неверная ссылка*\nпример:\n\n_https://cars\\.av\\.by/filter_",
     querySaved: "Ваша ссылка успешно сохранена",
     errorDuringSaving: "Произошла ошикба при сохранении",
@@ -22,6 +23,8 @@ export const MSG = {
     queryDeleted: 'Запрос успешно удален',
     queryDeleteError: 'Произошла ошибка во время удаления запроса',
     checkInProcess: 'Проверка по данному запросу уже выполняется',
+    queryRenamed: 'Запрос успешно переименован',
+    errorTryLater: 'Произошла ошибка\\. Попробуйте позже'
 };
 
 function getQueryName(query: Query): string {

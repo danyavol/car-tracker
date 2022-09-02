@@ -8,7 +8,8 @@ import { getQueryListKeyboard, getQuerySettingsKeyboard, getDeleteQueryKeyboard,
 import { MSG } from './metadata';
 import { registerUserMiddleware } from './middlewares/register-user.middleware';
 import { runQueryScan } from './parsers/parser';
-import { addCarScene } from './scenes/add-car.scene';
+import { addQueryScene } from './scenes/add-query.scene';
+import { renameQueryScene } from './scenes/rename-query.scene';
 import { updateTimeout } from './services/auto-scan.service';
 import { getNextScanDate } from './services/query.service';
 import { allQueries, allUsers } from './services/storage.service';
@@ -17,7 +18,7 @@ import { getCtxQueries } from './services/telegraf.service';
 bot.use(registerUserMiddleware);
 
 /** Stage middleware */
-const stage = new Scenes.Stage<Scenes.WizardContext>([addCarScene]);
+const stage = new Scenes.Stage<Scenes.WizardContext>([addQueryScene, renameQueryScene]);
 bot.use(session());
 bot.use(stage.middleware());
 
@@ -32,7 +33,7 @@ bot.hears(/новый запрос/i, (ctx) => {
     ctx.replyWithMarkdownV2(
         MSG.enterQueryLink, 
         Markup.keyboard([["Отмена"]]).resize());
-    ctx.scene.enter('addCar', null, true);
+    ctx.scene.enter('addQuery', null, true);
 });
 
 bot.hears(/мои запросы/i, (ctx) => {
@@ -161,6 +162,13 @@ bot.on('callback_query', (ctx) => {
                     });
                 }
             });
+            break;
+        case Action.RenameQuery: 
+            ctx.replyWithMarkdownV2(
+                MSG.renameQuery, 
+                Markup.keyboard([["Отмена"]]).resize()
+            );
+            ctx.scene.enter('renameQuery', { query }, true);
             break;
         default:
             ctx.reply('В разработке');

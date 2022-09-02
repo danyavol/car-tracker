@@ -11,7 +11,12 @@ import { MSG } from "../metadata";
 import { updateTimeout } from "../services/auto-scan.service";
 import { getCtxQueries } from "../services/telegraf.service";
 
-export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
+interface SceneState {
+    link: string;
+    loading: boolean;
+}
+
+export const addQueryScene = new Scenes.WizardScene<Scenes.WizardContext>('addQuery',
     (ctx) => {
         const text = (ctx.message as Message.TextMessage).text;
 
@@ -25,7 +30,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
         }
 
         if (text && isValidUrl(text)) {
-            (ctx.wizard.state as any).link = text;
+            (ctx.wizard.state as SceneState).link = text;
             ctx.replyWithMarkdownV2(MSG.enterQueryName);
             ctx.wizard.next();
         } else {
@@ -34,7 +39,7 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
     },
     (ctx) => {
         const { text } = ctx.message as Message.TextMessage;
-        const state = ctx.wizard.state as any;
+        const state = ctx.wizard.state as SceneState;
 
         const ctxQueries = getCtxQueries(ctx);
 
