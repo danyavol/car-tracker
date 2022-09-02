@@ -1,5 +1,5 @@
 import { db } from "../database/database";
-import { CheckFrequency } from "../interfaces/check-frequency.interface";
+import { ScanFrequency } from "../interfaces/scan-frequency.interface";
 import { Query } from "../interfaces/query.interface";
 import { getMainMenuKeyboard } from "../keyboards/keyboards";
 import { isValidUrl } from "../parsers/parser";
@@ -8,7 +8,7 @@ import { Scenes } from "telegraf";
 import { Message } from "telegraf/typings/core/types/typegram";
 import uuid from "short-uuid";
 import { MSG } from "../metadata";
-import { updateTimeout } from "../services/auto-check.service";
+import { updateTimeout } from "../services/auto-scan.service";
 import { getCtxQueries } from "../services/telegraf.service";
 
 export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar',
@@ -52,8 +52,9 @@ export const addCarScene = new Scenes.WizardScene<Scenes.WizardContext>('addCar'
                 id: uuid.generate(),
                 name: text,
                 link: state.link,
-                checkFrequency: CheckFrequency.Day1,
+                scanFrequency: ScanFrequency.Day1,
                 nextCheck: new Date(), // To run first check immediately
+                checkInProcess: false,
                 cars: null,
                 userId: ctx.from.id,
             };

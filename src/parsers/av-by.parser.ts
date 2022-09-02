@@ -38,7 +38,8 @@ export class AvByParser implements Parser {
                 }
 
                 const obs = urls.map(url => defer(() =>
-                    from(axios.get<string>(url)).pipe(catchError(() => {
+                    from(axios.get<string>(url)).pipe(catchError((err) => {
+                        console.error('Error during getting cars from av.by', err);
                         hadErrors = true;
                         return of(null);
                     }))
@@ -53,7 +54,8 @@ export class AvByParser implements Parser {
                 return of(this.getCars(dom));
             }),
             combineLatestAll(),
-            catchError(() => {
+            catchError((err) => {
+                console.error('Error during getting cars from av.by', err);
                 hadErrors = true;
                 return of([[]])
             }),

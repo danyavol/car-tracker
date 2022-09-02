@@ -4,13 +4,13 @@ import { bot } from './config';
 import { db } from './database/database';
 import { Action } from './interfaces/actions.interface';
 import { Query } from './interfaces/query.interface';
-import { getCarListKeyboard, getCarSettingsKeyboard, getDeleteQueryKeyboard, getFrequencyKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
+import { getQueryListKeyboard, getQuerySettingsKeyboard, getDeleteQueryKeyboard, getFrequencyKeyboard, getMainMenuKeyboard } from './keyboards/keyboards';
 import { MSG } from './metadata';
 import { registerUserMiddleware } from './middlewares/register-user.middleware';
-import { parseAndSaveCar } from './parsers/parser';
+import { runQueryScan } from './parsers/parser';
 import { addCarScene } from './scenes/add-car.scene';
-import { updateTimeout } from './services/auto-check.service';
-import { getNextCheckDate } from './services/query.service';
+import { updateTimeout } from './services/auto-scan.service';
+import { getNextScanDate } from './services/query.service';
 import { allQueries, allUsers } from './services/storage.service';
 import { getCtxQueries } from './services/telegraf.service';
 
@@ -39,7 +39,7 @@ bot.hears(/мои запросы/i, (ctx) => {
     const queries = getCtxQueries(ctx);
 	ctx.replyWithMarkdownV2(
         MSG.queryList(!!queries.length), 
-        getCarListKeyboard(queries)
+        getQueryListKeyboard(queries)
     );
 });
 
@@ -49,30 +49,34 @@ bot.on('callback_query', (ctx) => {
     const query = queries.find(q => q.id === data.queryId);
 
     switch(data.action) {
-        case Action.OpenCarsList:
+        case Action.QueryList:
             ctx.editMessageText(
                 MSG.queryList(!!queries.length), 
-                { parse_mode: "MarkdownV2", reply_markup: getCarListKeyboard(queries).reply_markup }
+                { parse_mode: "MarkdownV2", reply_markup: getQueryListKeyboard(queries).reply_markup }
             );
             break;
-        case Action.OpenCar:
+        case Action.QuerySettings:
             ctx.editMessageText(
-                MSG.queryInfo(query),
+                MSG.querySettingsMenu(query),
                 { 
                     disable_web_page_preview: true, 
-                    reply_markup: getCarSettingsKeyboard(query).reply_markup,
+                    reply_markup: getQuerySettingsKeyboard(query).reply_markup,
                     parse_mode: "MarkdownV2"
                 }
             );
             break;
-        case Action.RunCarCheck:
+        case Action.RunQueryScan:
+            if (query.checkInProcess) {
+                ctx.replyWithMarkdownV2(MSG.checkInProcess);
+                break;
+            }
+
             ctx.deleteMessage();
             ctx.replyWithMarkdownV2(
                 MSG.queryCheckStarted(query), 
                 { disable_web_page_preview: true }
             );
-            query.nextCheck = getNextCheckDate(query.checkFrequency);
-            parseAndSaveCar(query).subscribe((notices) => {
+            runQueryScan(query).subscribe((notices) => {
                 ctx.replyWithMarkdownV2(MSG.queryCheckEnded(!!notices.length)).then(() => {
                     notices.forEach(notice => {
                         ctx.replyWithPhoto(notice.photo, { caption: notice.message, parse_mode: 'MarkdownV2' });
@@ -80,7 +84,7 @@ bot.on('callback_query', (ctx) => {
                 });
             });
             break;
-        case Action.CheckFrequency:
+        case Action.ScanFrequencyMenu:
             ctx.editMessageText(
                 MSG.changeCheckFrequency(query),
                 { 
@@ -90,16 +94,16 @@ bot.on('callback_query', (ctx) => {
                 }
             );
             break;
-        case Action.UpdateCheckFrequency:
-            if (query.checkFrequency === data.fr) break;
+        case Action.ChangeScanFrequency:
+            if (query.scanFrequency === data.fr) break;
             const newQuery: Query = { 
                 ...query, 
-                checkFrequency: data.fr, 
-                nextCheck: getNextCheckDate(data.fr) 
+                scanFrequency: data.fr, 
+                nextCheck: getNextScanDate(data.fr) 
             };
             db.queries.saveQuery(newQuery).subscribe({
                 next() {
-                    query.checkFrequency = newQuery.checkFrequency;
+                    query.scanFrequency = newQuery.scanFrequency;
                     query.nextCheck = newQuery.nextCheck;
                     updateTimeout(query);
                     ctx.answerCbQuery("Успешно сохранено");
@@ -125,7 +129,7 @@ bot.on('callback_query', (ctx) => {
                 }
             });
             break;
-        case Action.ConfirmDeleteQuery:
+        case Action.DeleteQueryConfirmation:
             ctx.editMessageText(
                 MSG.confirmDeleteQuery(query),
                 {
@@ -136,25 +140,26 @@ bot.on('callback_query', (ctx) => {
             );
             break;
         case Action.DeleteQuery:
-            db.queries.deleteQuery(query.id).pipe(
-                map(() => {
-                    
-
-                    return MSG.queryDeleted;
-                }),
-                catchError(() => of(MSG.queryDeleteError))
-            ).subscribe((msg) => {
-                const index = allQueries.findIndex(q => q.id === query.id);
-                allQueries.splice(index, 1);
-
-                const index2 = queries.findIndex(q => q.id === query.id);
-                queries.splice(index2, 1);
+            db.queries.deleteQuery(query.id).subscribe({
+                next() {
+                    const index = allQueries.findIndex(q => q.id === query.id);
+                    allQueries.splice(index, 1);
+                    const index2 = queries.findIndex(q => q.id === query.id);
+                    queries.splice(index2, 1);
                 
-                ctx.answerCbQuery(msg);
-                ctx.editMessageText(MSG.queryList(!!queries.length), {
-                    parse_mode: "MarkdownV2",
-                    reply_markup: getCarListKeyboard(queries).reply_markup
-                });
+                    ctx.answerCbQuery(MSG.queryDeleted);
+                    ctx.editMessageText(MSG.queryList(!!queries.length), {
+                        parse_mode: "MarkdownV2",
+                        reply_markup: getQueryListKeyboard(queries).reply_markup
+                    });
+                },
+                error() {
+                    ctx.answerCbQuery(MSG.queryDeleteError);
+                    ctx.editMessageText(MSG.querySettingsMenu(query), {
+                        parse_mode: "MarkdownV2",
+                        reply_markup: getQuerySettingsKeyboard(query).reply_markup
+                    });
+                }
             });
             break;
         default:

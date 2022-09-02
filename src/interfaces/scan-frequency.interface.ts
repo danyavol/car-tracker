@@ -1,4 +1,4 @@
-export enum CheckFrequency {
+export enum ScanFrequency {
     Never = 'ne',
     Hour1 = 'h1',
     Hour6 = 'h6',

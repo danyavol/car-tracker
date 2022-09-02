@@ -1,17 +1,18 @@
 import { Timestamp } from "firebase/firestore/lite";
 import { Car } from "./car.interface";
-import { CheckFrequency } from "./check-frequency.interface";
+import { ScanFrequency } from "./scan-frequency.interface";
 
 export interface Query {
     id: string;
     name: string;
     link: string;
     userId: number;
-    checkFrequency: CheckFrequency;
+    scanFrequency: ScanFrequency;
     nextCheck: Date;
+    checkInProcess: boolean;
     cars: Car[] | null;
 }
 
-export interface FirestoreQuery extends Omit<Query, "nextCheck"> {
+export interface FirestoreQuery extends Omit<Query, "nextCheck" | "checkInProcess"> {
     nextCheck: Timestamp;
 }

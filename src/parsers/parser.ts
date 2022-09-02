@@ -1,11 +1,12 @@
 import { first, map, Observable, switchMap, tap } from "rxjs";
+import { updateTimeout } from "src/services/auto-scan.service";
+import { getNextScanDate } from "src/services/query.service";
 import { db } from "../database/database";
 import { Car } from "../interfaces/car.interface";
 import { ChangeNotice, Parser } from "../interfaces/parser.interface";
 import { Query } from "../interfaces/query.interface";
 import { getChangeMsgs } from "../services/change-msg.service";
 import { compareCars } from "../services/compare.service";
-import { allQueries } from "../services/storage.service";
 import { AvByParser } from "./av-by.parser";
 
 export function isValidUrl(url: string): boolean {
@@ -19,7 +20,10 @@ export function getParser(url: string): Parser | null {
     return null;
 }
 
-export function parseAndSaveCar(query: Query): Observable<ChangeNotice[]> {
+export function runQueryScan(query: Query): Observable<ChangeNotice[]> {
+    query.checkInProcess = true;
+    query.nextCheck = getNextScanDate(query.scanFrequency);
+
     return getParser(query.link).getAllCars().pipe(
         map((result) => {
             let changeNotices: ChangeNotice[] = []
@@ -36,6 +40,10 @@ export function parseAndSaveCar(query: Query): Observable<ChangeNotice[]> {
         switchMap(({query, changeNotices}) => db.queries.saveQuery(query).pipe(
             map(() => changeNotices)
         )),
+        tap(() => {
+            query.checkInProcess = false;
+            updateTimeout(query);
+        }),
         first()
     );
 }

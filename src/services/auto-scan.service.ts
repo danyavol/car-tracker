@@ -1,30 +1,27 @@
 import { bot } from "../config";
 import { Query } from "../interfaces/query.interface";
-import { parseAndSaveCar } from "../parsers/parser";
-import { getNextCheckDate, getTimeUntilStart } from "./query.service";
+import { runQueryScan } from "../parsers/parser";
+import { getTimeUntilDate } from "./query.service";
 
 const timersMap = new Map<string, NodeJS.Timeout>();
 
 export function updateTimeout(query: Query): void {
-    query = { ...query };
     if (timersMap.has(query.id)) {
         clearTimeout(timersMap.get(query.id));
     }
     
-    const time = getTimeUntilStart(query.nextCheck);
+    const time = getTimeUntilDate(query.nextCheck);
     if (time === null) return;
 
     const newTimeout = setTimeout(() => {
-        query.nextCheck = getNextCheckDate(query.checkFrequency);
-        
-        parseAndSaveCar(query).subscribe((notices) => {
+        if (query.checkInProcess) return;
+        runQueryScan(query).subscribe((notices) => {
             notices.forEach(notice => {
                 bot.telegram.sendPhoto(query.userId, notice.photo, {
                     caption: notice.message,
                     parse_mode: "MarkdownV2"
                 });
             });
-            updateTimeout(query);
         });
     }, time);
 

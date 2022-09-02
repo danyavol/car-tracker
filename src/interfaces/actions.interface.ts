@@ -1,10 +1,10 @@
 export enum Action {
-    Rename,
-    ConfirmDeleteQuery,
+    QueryList,
+    QuerySettings,
+    RunQueryScan,
+    ScanFrequencyMenu,
+    ChangeScanFrequency,
+    RenameQuery,
+    DeleteQueryConfirmation,
     DeleteQuery,
-    CheckFrequency,
-    UpdateCheckFrequency,
-    RunCarCheck,
-    OpenCar,
-    OpenCarsList
 }

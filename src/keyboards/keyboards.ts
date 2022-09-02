@@ -1,7 +1,7 @@
 import { Action } from "../interfaces/actions.interface";
-import { CheckFrequency } from "../interfaces/check-frequency.interface";
+import { ScanFrequency } from "../interfaces/scan-frequency.interface";
 import { Query } from "../interfaces/query.interface";
-import { getCheckFrequencyName } from "../services/query.service";
+import { getScanFrequencyName } from "../services/query.service";
 import { Markup } from "telegraf";
 
 export function getMainMenuKeyboard(queries: Query[]) {
@@ -11,43 +11,43 @@ export function getMainMenuKeyboard(queries: Query[]) {
     ]).resize();
 }
 
-export function getCarListKeyboard(queries: Query[]) {
+export function getQueryListKeyboard(queries: Query[]) {
     return Markup.inlineKeyboard([
         ...queries.map(q => [{ callback_data: 
-            JSON.stringify({action: Action.OpenCar, queryId: q.id}),
+            JSON.stringify({action: Action.QuerySettings, queryId: q.id}),
             text: q.name 
         }])
     ]);
 }
 
-export function getCarSettingsKeyboard(query: Query) {
+export function getQuerySettingsKeyboard(query: Query) {
     return Markup.inlineKeyboard([
         [{ 
             callback_data: JSON.stringify({
-                action: Action.RunCarCheck, queryId: query.id
+                action: Action.RunQueryScan, queryId: query.id
             }),
             text: "✅ Выполнить проверку"
         }],
         [{ 
             callback_data: JSON.stringify({ 
-                action: Action.CheckFrequency, queryId: query.id
+                action: Action.ScanFrequencyMenu, queryId: query.id
             }),
             text: "⏱ Автоматическая проверка"
         }],
         [{ 
             callback_data: JSON.stringify({ 
-                action: Action.Rename, queryId: query.id
+                action: Action.RenameQuery, queryId: query.id
             }),
             text: "✏️ Переименовать"
         }],
         [{ 
             callback_data: JSON.stringify({ 
-                action: Action.ConfirmDeleteQuery, queryId: query.id
+                action: Action.DeleteQueryConfirmation, queryId: query.id
             }),
             text: "❌ Удалить"
         }],
         [{
-            callback_data: JSON.stringify({action: Action.OpenCarsList}),
+            callback_data: JSON.stringify({action: Action.QueryList}),
             text: "« Назад"
         }]
     ]);
@@ -55,17 +55,17 @@ export function getCarSettingsKeyboard(query: Query) {
 
 export function getFrequencyKeyboard(query: Query) {
     return Markup.inlineKeyboard([
-        ...Object.keys(CheckFrequency).map(key => [{
+        ...Object.keys(ScanFrequency).map(key => [{
             callback_data: JSON.stringify({
-                action: Action.UpdateCheckFrequency,
+                action: Action.ChangeScanFrequency,
                 queryId: query.id,
-                fr: CheckFrequency[key]
+                fr: ScanFrequency[key]
             }),
-            text: (query.checkFrequency === CheckFrequency[key] ? "✅ " : "") + getCheckFrequencyName(CheckFrequency[key]),
+            text: (query.scanFrequency === ScanFrequency[key] ? "✅ " : "") + getScanFrequencyName(ScanFrequency[key]),
             
         }]),
         [{
-            callback_data: JSON.stringify({action: Action.OpenCar, queryId: query.id}),
+            callback_data: JSON.stringify({action: Action.QuerySettings, queryId: query.id}),
             text: "« Назад"
         }]
     ]);
@@ -79,7 +79,7 @@ export function getDeleteQueryKeyboard(query: Query) {
         },
         {
             text: "Нет",
-            callback_data: JSON.stringify({action: Action.OpenCar, queryId: query.id}),
+            callback_data: JSON.stringify({action: Action.QuerySettings, queryId: query.id}),
         }]
     ])
 }

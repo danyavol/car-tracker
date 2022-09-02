@@ -1,5 +1,5 @@
 import { collection, CollectionReference, doc, DocumentReference, Firestore, getDoc, getDocs, setDoc } from "firebase/firestore/lite";
-import { catchError, EMPTY, first, from, map, Observable, switchMap, tap } from "rxjs";
+import { catchError, EMPTY, first, from, map, Observable, switchMap } from "rxjs";
 import { User } from "../interfaces/user.interface";
 import { Collections } from "./database";
 

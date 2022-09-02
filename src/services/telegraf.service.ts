@@ -13,7 +13,7 @@ export function getSender(ctx: Context): User {
 
 export function getCtxQueries(ctx: Context): Query[] {
     const userId = getSender(ctx)?.id;
-    return allQueries.filter(q => q.userId === userId);
+    return getUserQueries(userId);
 }
 
 export function getUserQueries(userId: number): Query[] {
