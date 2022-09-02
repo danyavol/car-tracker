@@ -23,13 +23,15 @@ export function getChangeMsgs(query: Query, changes: CompareResult<Car>, hadErro
         });
     });
 
-    changes.deleted.forEach(car => {
-        notices.push({
-            photo: car.preview_image,
-            message: `🚫 Снялось авто с продажи по запросу [${escape(query.name)}](${query.link})\n\n` + getCarInfo(car)
+    if (!hadErrors) {
+        changes.deleted.forEach(car => {
+            notices.push({
+                photo: car.preview_image,
+                message: `🚫 Снялось авто с продажи по запросу [${escape(query.name)}](${query.link})\n\n` + getCarInfo(car)
+            });
         });
-    });
-
+    }
+    
     return notices;
 }
 
