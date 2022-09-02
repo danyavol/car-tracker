@@ -1,6 +1,6 @@
 import { first, map, Observable, switchMap, tap } from "rxjs";
-import { updateTimeout } from "src/services/auto-scan.service";
-import { getNextScanDate } from "src/services/query.service";
+import { updateTimeout } from "../services/auto-scan.service";
+import { getNextScanDate } from "../services/query.service";
 import { db } from "../database/database";
 import { Car } from "../interfaces/car.interface";
 import { ChangeNotice, Parser } from "../interfaces/parser.interface";
