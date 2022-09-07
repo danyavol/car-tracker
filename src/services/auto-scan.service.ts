@@ -2,8 +2,7 @@ import { bot } from "../config";
 import { Query } from "../interfaces/query.interface";
 import { runQueryScan } from "../parsers/parser";
 import { getTimeUntilDate } from "./query.service";
-
-const timersMap = new Map<string, NodeJS.Timeout>();
+import { timersMap } from "./storage.service";
 
 export function updateTimeout(query: Query): void {
     if (timersMap.has(query.id)) {
@@ -28,3 +27,10 @@ export function updateTimeout(query: Query): void {
     timersMap.set(query.id, newTimeout);
 }
 
+export function deleteTimeout(queryId: string): void {
+    const timeoutId = timersMap.get(queryId);
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+        timersMap.delete(queryId);
+    }
+}

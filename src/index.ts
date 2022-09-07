@@ -10,7 +10,7 @@ import { registerUserMiddleware } from './middlewares/register-user.middleware';
 import { runQueryScan } from './parsers/parser';
 import { addQueryScene } from './scenes/add-query.scene';
 import { renameQueryScene } from './scenes/rename-query.scene';
-import { updateTimeout } from './services/auto-scan.service';
+import { deleteTimeout, updateTimeout } from './services/auto-scan.service';
 import { getNextScanDate } from './services/query.service';
 import { allQueries, allUsers } from './services/storage.service';
 import { getCtxQueries } from './services/telegraf.service';
@@ -161,6 +161,8 @@ bot.on('callback_query', (ctx) => {
                     allQueries.splice(index, 1);
                     const index2 = queries.findIndex(q => q.id === query.id);
                     queries.splice(index2, 1);
+
+                    deleteTimeout(query.id);
                 
                     ctx.answerCbQuery(MSG.queryDeleted);
                     ctx.editMessageText(MSG.queryList(!!queries.length), {
