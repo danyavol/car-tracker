@@ -3,7 +3,7 @@ import { Car, GetAllCarsResult } from "../interfaces/car.interface";
 import { Parser } from "../interfaces/parser.interface";
 import { JSDOM } from "jsdom";
 import axios from "axios";
-import { OtomotoCarData } from "src/interfaces/otomoto.interface";
+import { OtomotoCarData } from "../interfaces/otomoto.interface";
 
 export class OtomotoParser implements Parser {
     private url: string;
