@@ -37,15 +37,15 @@ export function getChangeMsgs(query: Query, changes: CompareResult<Car>, hadErro
 
 function getCarInfo(car: Car): string {
     return `🚙 *[${escape(car.name)}](${car.link})*` 
-        + `\n${car.transmission_type}, ${escape(car.engine_capacity)}, ${car.engine_type}, ${car.body_type}`
+        + `\n${car.transmission_type}, ${escape(car.engine_capacity)}, ${escape(car.engine_type)}${escape(car.body_type ? ', ' + car.body_type : '')}`
         + `\n${escape(formatYear(car.year))}, ${formatMileage(car.mileage)}`
         + `\n${escape(car.city)}`
-        + `\n\n*${escape(formatPrice(car.price_usd))}*`;
+        + `\n\n*${escape(formatPrice(car.price, car.currency))}*`;
 }
 
 function getEditedCarInfo(oldCar: Car, newCar: Car): string {
     return `🚙 *[${escape(newCar.name)}](${newCar.link})*` 
-        + `\n${newCar.transmission_type}, ${escape(newCar.engine_capacity)}, ${newCar.engine_type}, ${newCar.body_type}`
+        + `\n${newCar.transmission_type}, ${escape(newCar.engine_capacity)}, ${escape(newCar.engine_type)}${escape(newCar.body_type ? ', ' + newCar.body_type : '')}`
         + `\n${escape(formatYear(newCar.year))}, ${formatMileage(newCar.mileage)}`
-        + `\n~${escape(formatPrice(oldCar.price_usd))}~ *${escape(formatPrice(newCar.price_usd))}*`;
+        + `\n~${escape(formatPrice(oldCar.price, oldCar.currency))}~ *${escape(formatPrice(newCar.price, newCar.currency))}*`;
 }

@@ -3,6 +3,7 @@ import { Car, GetAllCarsResult } from "../interfaces/car.interface";
 import { Parser } from "../interfaces/parser.interface";
 import { JSDOM } from "jsdom";
 import axios from "axios";
+import { Currency } from "src/interfaces/currency.interface";
 
 
 export class AvByParser implements Parser {
@@ -92,7 +93,8 @@ export class AvByParser implements Parser {
                 city: item.querySelector('.listing-item__location').textContent,
                 last_update: item.querySelector('.listing-item__date').textContent,
                 preview_image: (item.querySelector('.listing-item__photo img') as HTMLImageElement).dataset.srcset.split(' ')[0],
-                price_usd: parseInt(priceString.slice(1, -1).replace(/\s/g, '')),
+                price: parseInt(priceString.slice(1, -1).replace(/\s/g, '')),
+                currency: Currency.USD,
                 year: parseInt(params[0].textContent.slice(0, 4)),
                 mileage: parseInt(params[2].textContent.replace(/\D/g, '')),
                 body_type: descriptionNodes[12].nodeValue,

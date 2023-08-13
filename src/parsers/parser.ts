@@ -8,6 +8,7 @@ import { Query } from "../interfaces/query.interface";
 import { getChangeMsgs } from "../services/change-msg.service";
 import { compareCars } from "../services/compare.service";
 import { AvByParser } from "./av-by.parser";
+import { OtomotoParser } from "./otomoto.parser";
 
 export function isValidUrl(url: string): boolean {
     return getParser(url) !== null;
@@ -16,6 +17,8 @@ export function isValidUrl(url: string): boolean {
 export function getParser(url: string): Parser | null {
     if (/^https?:\/\/cars.av.by\/filter/.test(url)) {
         return new AvByParser(url);
+    } else if (/^https?:\/\/www.otomoto.pl\/osobowe/.test(url)) {
+        return new OtomotoParser(url);
     }
     return null;
 }
@@ -42,7 +45,7 @@ export function runQueryScan(query: Query): Observable<ChangeNotice[]> {
         )),
         tap(() => {
             query.checkInProcess = false;
-            updateTimeout(query);
+            updateTimeout(query);   
         }),
         first()
     );

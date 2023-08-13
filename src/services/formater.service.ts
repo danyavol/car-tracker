@@ -1,5 +1,7 @@
-export function formatPrice(price: number): string {
-    return new Intl.NumberFormat('ru', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+import { Currency } from "src/interfaces/currency.interface";
+
+export function formatPrice(price: number, currency: Currency): string {
+    return new Intl.NumberFormat('ru', { style: 'currency', currency, maximumFractionDigits: 0 }).format(price);
 }
 
 export function formatMileage(mileage: number): string {

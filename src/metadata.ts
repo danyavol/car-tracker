@@ -11,7 +11,8 @@ export const MSG = {
     queryCheckStarted: (query: Query) => `Началась проверка по запросу ${getQueryName(query)}`,
     queryCheckEnded: (hasChanges: boolean) => 'Проверка завершена' + (hasChanges ? '' : '\n\n_Изменений не найдено_'),
     enterQueryLink: 'Введите ссылку запроса\\. Поддерживаются следующие сайты:\n'
-        + `\n_${escape('cars.av.by')}_`,
+        + `\n_${escape('cars.av.by')}_`
+        + `\n_${escape('otomoto.pl')}_`,
     enterQueryName: "Введите название запроса\\. Благодаря названию Вы сможете отличать запросы друг от друга",
     renameQuery: "Введите новое название запроса",
     invalidQueryLink: "*Неверная ссылка*\nпример:\n\n_https://cars\\.av\\.by/filter_",
