@@ -3,7 +3,7 @@ import { Car, GetAllCarsResult } from "../interfaces/car.interface";
 import { Parser } from "../interfaces/parser.interface";
 import { JSDOM } from "jsdom";
 import axios from "axios";
-import { Currency } from "src/interfaces/currency.interface";
+import { Currency } from "../interfaces/currency.interface";
 
 
 export class AvByParser implements Parser {
